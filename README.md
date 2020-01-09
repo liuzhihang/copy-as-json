@@ -2,7 +2,7 @@ Toolkit
 =======
 
 [![JetBrains Plugins](https://img.shields.io/jetbrains/plugin/v/13606-copy-as-json.svg)](https://plugins.jetbrains.com/plugin/13606-copy-as-json)
-[![Version](http://phpstorm.espend.de/badge/12384/version)](https://plugins.jetbrains.com/plugin/13606-copy-as-json/versions)
+[![Version](http://phpstorm.espend.de/badge/13606/version)](https://plugins.jetbrains.com/plugin/13606-copy-as-json/versions)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/13606-copy-as-json.svg)](https://plugins.jetbrains.com/plugin/13606-copy-as-json)
 [![License](https://img.shields.io/badge/license-MIT-red.svg)](https://github.com/liuzhihangs/copy-as-json/blob/master/LICENSE)
 
