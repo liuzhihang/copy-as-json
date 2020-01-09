@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.15'
+}
+
+group 'com.liuzhihang.toolkit'
+version '1.0.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    maven { url "https://maven.aliyun.com/repository/public" }
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    version '2019.1.1'
+    pluginName 'Copy as Json'
+    updateSinceUntilBuild false
+    sameSinceUntilBuild false
+}
+patchPluginXml {
+    pluginDescription(file(descriptionFile).text)
+    changeNotes(file(changesFile).text)
+}

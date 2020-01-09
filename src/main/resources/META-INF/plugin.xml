@@ -1,0 +1,26 @@
+<idea-plugin>
+    <id>com.liuzhihang.toolkit.copyasjson</id>
+    <name>Copy as Json</name>
+    <vendor email="liuzhihangs@qq.com" url="https://liuzhihang.com">Liu ZhiHang</vendor>
+
+    <description><![CDATA[ Description will be added by gradle build]]></description>
+
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.java</depends>
+
+    <idea-version since-build="181.00"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <action id="Toolkit.Json.CopyAsJsonAction" class="com.liuzhihang.toolkit.action.CopyAsJsonAction"
+                text="Copy As Json" description="Copy As Json">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift J"/>
+        </action>
+    </actions>
+</idea-plugin>
