@@ -11,12 +11,14 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
+import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiTypesUtil;
 import com.intellij.psi.util.PsiUtil;
 import com.liuzhihang.toolkit.utils.GsonFormatUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -68,10 +70,20 @@ public class CopyAsJsonAction extends AnAction {
         PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
         Editor editor = e.getData(CommonDataKeys.EDITOR);
 
-        PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
-        PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
+        if (editor == null || project == null || psiFile == null) {
+            return;
+        }
+
+        PsiClass selectedClass = getTargetClass(editor, psiFile);
+
+        if (selectedClass == null) {
+            Notification error = NOTIFICATION_GROUP.createNotification("Please use in java class file", NotificationType.ERROR);
+            Notifications.Bus.notify(error, project);
+            return;
+        }
+
         try {
-            Map fieldsMap = getFields(selectedClass);
+            Map<String, Object> fieldsMap = getFields(selectedClass);
 
             Gson gson = new GsonBuilder().create();
             String json = GsonFormatUtil.gsonFormat(gson, fieldsMap);
@@ -90,13 +102,25 @@ public class CopyAsJsonAction extends AnAction {
 
     }
 
+    @Nullable
+    public static PsiClass getTargetClass(@NotNull Editor editor, @NotNull PsiFile file) {
+        int offset = editor.getCaretModel().getOffset();
+        PsiElement element = file.findElementAt(offset);
+        if (element != null) {
+            // 当前类
+            PsiClass target = PsiTreeUtil.getParentOfType(element, PsiClass.class);
 
-    public static Map getFields(PsiClass psiClass) {
+            return target instanceof SyntheticElement ? null : target;
+        }
+        return null;
+    }
+
+    public static Map<String, Object> getFields(PsiClass psiClass) {
 
         Map<String, Object> fieldMap = new LinkedHashMap<>();
         // Map<String, Object> commentFieldMap = new LinkedHashMap<>();
 
-        if (psiClass != null && psiClass.getClassKind() == JvmClassKind.CLASS) {
+        if (psiClass != null && !psiClass.isEnum() && !psiClass.isInterface() && !psiClass.isAnnotationType()) {
             for (PsiField field : psiClass.getAllFields()) {
                 PsiType type = field.getType();
                 String name = field.getName();
@@ -130,7 +154,7 @@ public class CopyAsJsonAction extends AnAction {
                             list.add(getFields(PsiUtil.resolveClassInType(deepType)));
                         }
                         fieldMap.put(name, list);
-                    } else if (fieldTypeName.startsWith("List") || fieldTypeName.startsWith("ArrayList") || fieldTypeName.startsWith("Set") || fieldTypeName.startsWith("HashSet")) {
+                    } else if (InheritanceUtil.isInheritor(type, CommonClassNames.JAVA_UTIL_COLLECTION)) {
                         // List Set or HashSet
                         List<Object> list = new ArrayList<>();
                         PsiType iterableType = PsiUtil.extractIterableTypeParameter(type, false);
@@ -144,10 +168,10 @@ public class CopyAsJsonAction extends AnAction {
                             }
                         }
                         fieldMap.put(name, list);
-                    } else if (fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map")) {
+                    } else if (InheritanceUtil.isInheritor(type, CommonClassNames.JAVA_UTIL_MAP)) {
                         // HashMap or Map
                         fieldMap.put(name, new HashMap<>(4));
-                    } else if (PsiUtil.resolveClassInType(type).getClassKind() != JvmClassKind.CLASS) {
+                    } else if (psiClass.isEnum() || psiClass.isInterface() || psiClass.isAnnotationType()) {
                         // enum or interface
                         fieldMap.put(name, "");
                     } else {
