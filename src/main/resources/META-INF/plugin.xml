@@ -18,7 +18,7 @@
 
     <actions>
         <action id="Toolkit.Json.CopyAsJsonAction" class="com.liuzhihang.toolkit.action.CopyAsJsonAction"
-                text="CopyAsJsonAction" description="Copy As Json">
+                text="Copy As Json" description="Copy Java Bean as json string">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <keyboard-shortcut keymap="$default" first-keystroke="shift meta J"/>
         </action>

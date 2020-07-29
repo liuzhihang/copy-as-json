@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.*;
 
@@ -52,7 +53,7 @@ public class CopyAsJsonAction extends AnAction {
         PROPERTIES_TYPES.put("Boolean", false);
         // 其他
         PROPERTIES_TYPES.put("String", "");
-        PROPERTIES_TYPES.put("BigDecimal", null);
+        PROPERTIES_TYPES.put("BigDecimal", BigDecimal.ZERO);
         PROPERTIES_TYPES.put("Date", null);
         PROPERTIES_TYPES.put("LocalDate", null);
         PROPERTIES_TYPES.put("LocalTime", null);
@@ -85,7 +86,7 @@ public class CopyAsJsonAction extends AnAction {
         try {
             Map<String, Object> fieldsMap = getFields(selectedClass);
 
-            Gson gson = new GsonBuilder().create();
+            Gson gson = new GsonBuilder().serializeNulls().create();
             String json = GsonFormatUtil.gsonFormat(gson, fieldsMap);
 
             // 使用自定义缩进格式 String json = new GsonBuilder().setPrettyPrinting().create().toJson(fieldsMap);
